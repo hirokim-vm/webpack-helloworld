@@ -1,0 +1,61 @@
+accelerator:
+  displayName: webpack + React + TypeScrip Hello World!
+  description: A React sample app using webpack
+  iconUrl: https://seeklogo.com/images/R/react-logo-7B3CE81517-seeklogo.com.png
+  tags:
+  - webpack
+  - React
+  - TypeScript
+  - tanzu
+
+  # options for the UI
+  options:
+  - name: includeTap
+    label: "Include TAP deployment resources?"
+    inputType: checkbox
+    dataType: boolean
+    defaultValue: true
+
+engine:
+  merge:
+    - include: [ "**" ]
+      exclude: [ "package.json", "config/**", "catalog/**", "README.md", "DEPLOYING.md" ]
+    - include: [ "package.json" ]
+      chain:
+      - type: ReplaceText
+        substitutions:
+        - text: React + TypeScrip
+          with: "#artifactId"
+    - include: [ "config/workload.yaml" ]
+      condition: "#includeTap"
+      chain:
+      - type: ReplaceText
+        substitutions:
+        - text: React + TypeScrip
+          with: "#artifactId"
+    - include: [ "catalog/catalog-info.yaml" ]
+      condition: "#includeTap"
+      chain:
+      - type: ReplaceText
+        substitutions:
+        - text: node-express
+          with: "#artifactId"
+    - name: README
+      type: Combo
+      onConflict: Append
+      merge:
+      - include: [ "README.md"]
+        chain:
+        - type: ReplaceText
+          substitutions:
+          - text: React + TypeScrip
+            with: "#artifactId"
+      - include: [ "DEPLOYING.md" ]
+        condition: "#includeTap"
+        chain:
+        - type: ReplaceText
+          substitutions:
+          - text: React + TypeScrip
+            with: "#artifactId"
+        - type: RewritePath
+          rewriteTo: "'README.md'"
